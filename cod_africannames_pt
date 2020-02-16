@@ -1,0 +1,565 @@
+import pandas as pd 
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+sns.set()
+plt.style.use('seaborn-colorblind')
+
+file = pd.read_csv('AfricanNamesDatabase.csv')
+
+file = file.replace(' ', np.nan)
+
+file.Sexage = file.Sexage.replace(np.nan, 'desconhecido')
+
+file.Age = pd.to_numeric(file.Age, downcast='float')
+file.Age = file.Age.fillna(file.Age.mean())
+
+file['Height (in)'] = pd.to_numeric(file['Height (in)'], downcast='float')
+file['Height (in)'] = file['Height (in)'].fillna(file['Height (in)'].mean())
+
+file['Ship name'] = file['Ship name'].replace(np.nan, 'desconhecido')
+
+file.Embarkation = file.Embarkation.replace(np.nan, 'desconhecido')
+
+file['Country of Origin'] = file['Country of Origin'].replace(
+        np.nan, 'desconhecido')
+
+for col in file.columns:
+    if file[col].dtype == np.object:
+        file[col] = file[col].astype('category') 
+        
+file.head()        
+file.info()
+file.describe()
+file.columns 
+
+file = file.replace({'Bahamas unspecified': 'Bahamas (não especificado)',
+                     'St. Helena': 'Santa Helena'})
+
+
+disemb0 = file.Disembarkation.value_counts()
+disemb0
+
+disemb1 = pd.Series(disemb0[:2])
+disemb2 = {'Bahamas, Jamaica e Santa Helena': sum(disemb0[2:])}
+disemb2 = pd.Series(disemb2, index=['Bahamas, Jamaica e Santa Helena'])
+disemb = pd.concat((disemb2, disemb1))
+disemb
+
+disemb_d = dict(disemb.sort_values(ascending=False))
+disemb_dkeys, disemb_dvalues = zip(*disemb_d.items())
+
+fig, ax = plt.subplots()
+#fig.suptitle('Locais onde as pessoas resgatadas desembarcaram', fontsize=14, 
+#             fontweight='bold')
+ax.pie(disemb_dvalues, autopct='%1.1f%%')
+fig.legend(disemb_dkeys, loc=8)
+plt.show()
+
+print(disemb0)        
+
+file = file.replace({'Old Calabar': 'Velha Calabar'})
+emb0 = file.Embarkation.value_counts()
+emb0.shape
+emb0
+
+
+emb1 = pd.Series(emb0[:5])
+emb2 = {'outros': sum(emb0[5:])}
+emb2 = pd.Series(emb2, index=['outros'])
+emb = pd.concat((emb2, emb1))
+
+emb_d = dict(emb.sort_values())
+emb_dkeys, emb_dvalues = zip(*emb_d.items())
+
+fig, ax = plt.subplots()
+ax.pie(emb_dvalues, labels=emb_dkeys, autopct='%1.1f%%')
+
+plt.show()   
+
+print(emb)
+
+arrival = pd.DataFrame(file.Arrival.value_counts()).reset_index(
+        ).sort_values(by='index')
+arrival = arrival.rename(columns={'index': 'Ano', 'Arrival': 
+    'Pessoas resgatadas'})
+    
+fig, ax = plt.subplots()    
+ax.scatter(x='Ano', y='Pessoas resgatadas', data=arrival, marker='+')
+ax.set_xlabel('Ano')
+
+plt.show()
+
+
+origin0a = file['Country of Origin'].value_counts()
+origin0a.shape
+
+origin1a = pd.Series(origin0a[:2])
+origin2a = {'outros': sum(origin0a[2:])}
+origin2a = pd.Series(origin2a, index=['outros'])
+origina = pd.concat((origin2a, origin1a))
+
+origina_d = dict(origina.sort_values())
+origina_dkeys, origina_dvalues = zip(*origina_d.items())
+
+fig, ax = plt.subplots()
+ax.pie(origina_dvalues, labels=origina_dkeys, autopct='%1.1f%%')
+plt.show()
+
+print(origin0a.head(11))
+
+origin0b = origin0a.iloc[1:]
+origin0b.shape
+
+origin1b = pd.Series(origin0b[:5])
+origin2b = {'outros': sum(origin0b[5:])}
+origin2b = pd.Series(origin2b, index=['outros'])
+originb = pd.concat((origin2b, origin1b))
+
+originb_d = dict(originb.sort_values(ascending=False))
+originb_dkeys, originb_dvalues = zip(*originb_d.items())
+
+fig, ax = plt.subplots()
+ax.pie(originb_dvalues, autopct='%1.1f%%')
+fig.legend(originb_dkeys, loc=4)
+plt.show()
+
+print(originb)
+
+file = file.replace({'Man': 'Homem', 'Boy': 'Menino', 'Woman': 'Mulher', 
+                     'Girl': 'Menina'})
+sexage = file.Sexage.value_counts()
+sexage_d = dict(sexage)
+sexage_dkeys, sexage_dvalues = zip(*sexage_d.items())
+
+fig, ax = plt.subplots()
+ax.pie(sexage_dvalues, autopct='%1.1f%%')
+fig.legend(sexage_dkeys, loc=4)
+plt.show()
+
+print(sexage)
+
+age = file.Age
+fig, ax = plt.subplots()    
+ax.hist(age, log=True)
+ax.set_xlabel('idade')
+plt.show()
+
+age.describe()
+
+ship0 = file['Ship name'].value_counts()
+ship0.shape
+
+ship1 = pd.Series(ship0[:1])
+ship2 = {'outros': sum(ship0[1:])}
+ship2 = pd.Series(ship2, index=['outros'])
+ship = pd.concat((ship2, ship1))
+
+ship_d = dict(ship.sort_values())
+ship_dkeys, ship_dvalues = zip(*ship_d.items())
+
+fig, ax = plt.subplots()
+ax.pie(ship_dvalues, labels=ship_dkeys, autopct='%1.1f%%')
+plt.show()
+
+print(ship0.head())
+
+shipb = ship0.head(10)
+shipb_d = dict(shipb.sort_values())
+shipb_dkeys, shipb_dvalues = zip(*shipb_d.items())
+
+shipb = ship0.head(10)
+shipb_d = dict(shipb.sort_values())
+shipb_dkeys, shipb_dvalues = zip(*shipb_d.items())
+
+fig, ax = plt.subplots()
+ax.pie(shipb_dvalues, labels=shipb_dkeys, autopct='%1.1f%%', startangle=90)
+plt.show()
+
+print(shipb)
+
+print('Os 30 navios menos ocupados:')
+print(ship0[-30:])
+
+fabiana = file[file['Ship name'] == 'Fabiana']
+fabiana.shape
+fabiana.Embarkation.value_counts().head()
+fabiana.Disembarkation.value_counts()
+fabiana.Arrival.value_counts()
+
+disemb_ft = file[file.Disembarkation == 'Freetown']
+originfta0 = disemb_ft['Country of Origin'].value_counts()
+originfta0.shape
+
+originfta1 = pd.Series(originfta0[:1])
+originfta2 = {'outros': sum(originfta0[1:])}
+originfta2 = pd.Series(originfta2, index=['outros'])
+originfta = pd.concat((originfta2, originfta1))
+
+originfta_d = dict(originfta.sort_values())
+originfta_d = {x:y for x, y in originfta_d.items() if y != 0} 
+originfta_dkeys, originfta_dvalues = zip(*originfta_d.items())
+
+fig, ax = plt.subplots()
+ax.pie(originfta_dvalues, labels=originfta_dkeys, autopct='%1.1f%%')
+plt.show()
+
+print(originfta)
+
+originftb0 = originfta0.iloc[1:]
+originftb0.shape
+
+originftb1 = pd.Series(originftb0[:3])
+originftb2 = {'outros': sum(originftb0[3:])}
+originftb2 = pd.Series(originftb2, index=['outros'])
+originftb = pd.concat((originftb2, originftb1))
+
+originftb_d = dict(originftb)
+originftb_d = {x:y for x, y in originftb_d.items() if y != 0} 
+originftb_dkeys, originftb_dvalues = zip(*originftb_d.items())
+
+fig, ax = plt.subplots()
+ax.pie(originftb_dvalues, autopct='%1.1f%%', counterclock=False)
+fig.legend(originftb_dkeys, loc=4)
+plt.show()
+
+print(originftb)
+
+sexage_ft = disemb_ft.Sexage.value_counts()
+sexageft_d = dict(sexage_ft)
+sexageft_dkeys, sexageft_dvalues = zip(*sexageft_d.items())
+
+fig, ax = plt.subplots()
+ax.pie(sexageft_dvalues, autopct='%1.1f%%')
+fig.legend(sexageft_dkeys, loc=4)
+plt.show()
+
+print(sexage_ft)
+
+age_ft = disemb_ft.Age
+fig, ax = plt.subplots()    
+ax.hist(age_ft, log=True)
+ax.set_xlabel('idade')
+plt.show()
+
+age_ft.describe()
+
+arrivalft = pd.DataFrame(disemb_ft.Arrival.value_counts()).reset_index(
+        ).sort_values(by='index')
+arrivalft = arrivalft.rename(columns={'index': 'Ano', 'Arrival': 
+    'Pessoas resgatadas'})
+    
+fig, ax = plt.subplots()  
+ax.scatter(x='Ano', y='Pessoas resgatadas', data=arrivalft)  
+ax.scatter(x='Ano', y='Pessoas resgatadas', data=arrival, marker='+', 
+           c='#D55E00')
+ax.set_xlabel('Anos')
+ax.legend(labels=['Freetown', 'total'])
+plt.show()
+
+embft0 = disemb_ft['Embarkation'].value_counts()
+embft0.shape
+
+embft1 = pd.Series(embft0[:7])
+embft2 = {'outros': sum(embft0[7:])}
+embft2 = pd.Series(embft2, index=['outros'])
+embft = pd.concat((embft2, embft1))
+
+embft_d = dict(embft.sort_values())
+embft_dkeys, embft_dvalues = zip(*embft_d.items())
+
+fig, ax = plt.subplots()
+ax.pie(embft_dvalues, labels=embft_dkeys, autopct='%1.1f%%', 
+       counterclock=False)
+plt.show()
+
+print(embft)
+
+disemb_hv = file[file.Disembarkation == 'Havana']
+originhv0 = disemb_hv['Country of Origin'].value_counts()
+originhv0.shape
+
+originhv1 = pd.Series(originhv0[:6])
+originhv2 = {'outros': sum(originhv0[6:])}
+originhv2 = pd.Series(originhv2, index=['outros'])
+originhv = pd.concat((originhv2, originhv1))
+
+originhv_d = dict(originhv.sort_values())
+originhv_d = {x:y for x, y in originhv_d.items() if y != 0} 
+originhv_dkeys, originhv_dvalues = zip(*originhv_d.items())
+
+fig, ax = plt.subplots()
+ax.pie(originhv_dvalues, labels=originhv_dkeys, autopct='%1.1f%%')
+plt.show()
+
+print(originhv)
+
+sexage_hv = disemb_hv.Sexage.value_counts()
+sexagehv_d = dict(sexage_hv)
+sexagehv_dkeys, sexagehv_dvalues = zip(*sexagehv_d.items())
+
+fig, ax = plt.subplots()
+fig.legend(sexagehv_dkeys, loc=4)
+plt.show()
+
+print(sexage_hv)
+
+age_hv = disemb_hv.Age
+fig, ax = plt.subplots()    
+ax.hist(age_hv, log=True)
+ax.set_xlabel('idade')
+plt.show()
+
+age_hv.describe()
+
+arrivalhv = pd.DataFrame(disemb_hv.Arrival.value_counts()).reset_index(
+        ).sort_values(by='index')
+arrivalhv = arrivalhv.rename(columns={'index': 'Ano', 'Arrival': 
+    'Pessoas resgatadas'})
+    
+fig, ax = plt.subplots()  
+ax.scatter(x='Ano', y='Pessoas resgatadas', data=arrivalhv)  
+ax.scatter(x='Ano', y='Pessoas resgatadas', data=arrival, marker='+', 
+           c='#D55E00')
+ax.set_xlabel('Ano')
+ax.legend(labels=['Havana', 'geral'])
+plt.show()  
+
+embhv0 = disemb_hv['Embarkation'].value_counts()
+embhv0.shape
+
+embhv1 = pd.Series(embhv0[:7])
+embhv2 = {'outros': sum(embhv0[7:])}
+embhv2 = pd.Series(embhv2, index=['outros'])
+embhv = pd.concat((embhv2, embhv1))
+
+embhv_d = dict(embhv.sort_values())
+embhv_dkeys, embhv_dvalues = zip(*embhv_d.items())
+
+fig, ax = plt.subplots()
+ax.pie(embhv_dvalues, labels=embhv_dkeys, autopct='%1.1f%%')
+plt.show()
+   
+print(embhv)
+    
+disemb_bh = file[file.Disembarkation == 'Bahamas (não especificado)']
+originbh0 = disemb_bh['Country of Origin'].value_counts()
+originbh0.shape
+
+originbh1 = pd.Series(originbh0[:10])
+originbh2 = {'outros': sum(originbh0[10:])}
+originbh2 = pd.Series(originbh2, index=['outros'])
+originbh = pd.concat((originbh2, originbh1))
+
+originbh_d = dict(originbh)
+originbh_d = {x:y for x, y in originbh_d.items() if y != 0} 
+originbh_dkeys, originbh_dvalues = zip(*originbh_d.items())
+
+fig, ax = plt.subplots()
+ax.pie(originbh_dvalues, labels=originbh_dkeys, autopct='%1.1f%%')
+plt.show()
+
+print(originbh)
+
+sexage_bh = disemb_bh.Sexage.value_counts()
+sexagebh_d = dict(sexage_bh)
+sexagebh_dkeys, sexagebh_dvalues = zip(*sexagebh_d.items())
+
+fig, ax = plt.subplots()
+ax.pie(sexagebh_dvalues, autopct='%1.1f%%')
+fig.legend(sexagebh_dkeys, loc=4)
+plt.show()
+
+print(sexage_bh)
+
+age_bh = disemb_bh.Age
+fig, ax = plt.subplots()    
+ax.hist(age_bh, log=True)
+ax.set_xlabel('idade')
+plt.show()
+
+age_bh.describe()
+
+arrivalbh = pd.DataFrame(disemb_bh.Arrival.value_counts()).reset_index(
+        ).sort_values(by='index')
+arrivalbh = arrivalbh.rename(columns={'index': 'Ano', 'Arrival': 
+    'Pessoas resgatadas'})
+    
+fig, ax = plt.subplots()  
+ax.scatter(x='Ano', y='Pessoas resgatadas', data=arrivalbh)  
+ax.scatter(x='Ano', y='Pessoas resgatadas', data=arrival, marker='+', 
+           c='#D55E00')
+ax.set_xlabel('Ano')
+ax.legend(labels=['Bahamas', 'total'])
+plt.show()   
+
+embbh0 = disemb_bh['Embarkation'].value_counts()
+embbh0.shape
+
+embbh1 = pd.Series(embbh0[:7])
+embbh2 = {'outros': sum(embbh0[7:])}
+embbh2 = pd.Series(embbh2, index=['outros'])
+embbh = pd.concat((embbh2, embbh1))
+
+embbh_d = dict(embbh.sort_values())
+embbh_d = {x:y for x, y in embbh_d.items() if y != 0} 
+embbh_dkeys, embbh_dvalues = zip(*embbh_d.items())
+
+fig, ax = plt.subplots()
+ax.pie(embbh_dvalues, labels=embbh_dkeys, autopct='%1.1f%%', counterclock=False)
+plt.show()
+    
+print(embbh)
+    
+disemb_jm = file[file.Disembarkation == 'Kingston, Jamaica']
+originjm0 = disemb_jm['Country of Origin'].value_counts()
+originjm0.shape
+
+originjm1 = pd.Series(originjm0[:10])
+originjm2 = {'outros': sum(originjm0[10:])}
+originjm2 = pd.Series(originjm2, index=['outros'])
+originjm = pd.concat((originjm2, originjm1)).sort_values(ascending=False)
+
+originjm_d = dict(originjm)
+originjm_d = {x:y for x, y in originjm_d.items() if y != 0}
+originjm_dkeys, originjm_dvalues = zip(*originjm_d.items())
+
+fig, ax = plt.subplots()
+ax.pie(originjm_dvalues, labels=originjm_dkeys, autopct='%1.1f%%')
+plt.show()
+
+print(originjm)
+
+sexage_jm = disemb_jm.Sexage.value_counts()
+sexagejm_d = dict(sexage_jm)
+sexagejm_dkeys, sexagejm_dvalues = zip(*sexagejm_d.items())
+
+fig, ax = plt.subplots()
+ax.pie(sexagejm_dvalues, autopct='%1.1f%%')
+fig.legend(sexagejm_dkeys, loc=4)
+plt.show()
+
+print(sexage_jm)
+
+age_jm = disemb_jm.Age
+fig, ax = plt.subplots()    
+ax.hist(age_jm, log=True)
+ax.set_xlabel('idade')
+plt.show()
+
+age_jm.describe()
+
+arrivaljm = pd.DataFrame(disemb_jm.Arrival.value_counts()).reset_index(
+        ).sort_values(by='index')
+arrivaljm = arrivaljm.rename(columns={'index': 'Ano', 'Arrival': 
+    'Pessoas resgatadas'})
+    
+fig, ax = plt.subplots()  
+ax.scatter(x='Ano', y='Pessoas resgatadas', data=arrivaljm)  
+ax.scatter(x='Ano', y='Pessoas resgatadas', data=arrival, marker='+', 
+           c='#D55E00')
+ax.set_xlabel('Ano')
+ax.legend(labels=['Kingston, Jamaica', 'total'])
+plt.show() 
+
+embjm0 = disemb_jm['Embarkation'].value_counts()
+embjm0.shape
+
+embjm1 = pd.Series(embjm0[:7])
+embjm2 = {'Outros': sum(embjm0[7:])}
+embjm2 = pd.Series(embjm2, index=['Outros'])
+embjm = pd.concat((embjm2, embjm1)).sort_values(ascending=False)
+
+embjm_d = dict(embjm)
+embjm_d = {x:y for x, y in embjm_d.items() if y != 0} 
+embjm_dkeys, embjm_dvalues = zip(*embjm_d.items())
+
+fig, ax = plt.subplots()
+ax.pie(embjm_dvalues, labels=embjm_dkeys, autopct='%1.1f%%', counterclock=False)
+plt.show()
+    
+print(embjm)
+    
+disemb_hl = file[file.Disembarkation == 'Santa Helena']
+originhl0 = disemb_hl['Country of Origin'].value_counts()
+originhl0.shape
+
+originhl1 = pd.Series(originhl0[:10])
+originhl2 = {'Outros': sum(originhl0[10:])}
+originhl2 = pd.Series(originhl2, index=['Outros'])
+originhl = pd.concat((originhl2, originhl1)).sort_values(ascending=False)
+
+originhl_d = dict(originhl)
+originhl_d = {x: y for x, y in originhl_d.items() if y!= 0}
+originhl_dkeys, originhl_dvalues = zip(*originhl_d.items())
+
+fig, ax = plt.subplots()
+ax.pie(originhl_dvalues, labels=originhl_dkeys, autopct='%1.1f%%')
+plt.show()
+
+print(originhl)
+
+sexage_hl = disemb_hl.Sexage.value_counts()
+sexagehl_d = dict(sexage_hl)
+sexagehl_dkeys, sexagehl_dvalues = zip(*sexagehl_d.items())
+
+fig, ax = plt.subplots()
+ax.pie(sexagehl_dvalues, autopct='%1.1f%%')
+fig.legend(sexagehl_dkeys, loc=4)
+plt.show()
+
+print(sexage_hl)
+
+age_hl = disemb_hl.Age
+fig, ax = plt.subplots()    
+ax.hist(age_hl, log=True)
+ax.set_xlabel('idade')
+plt.show()
+
+age_hl.describe()
+
+arrivalhl = pd.DataFrame(disemb_hl.Arrival.value_counts()).reset_index(
+        ).sort_values(by='index')
+arrivalhl = arrivalhl.rename(columns={'index': 'Ano', 'Arrival': 
+    'Pessoas resgatadas'})
+    
+fig, ax = plt.subplots()  
+ax.scatter(x='Ano', y='Pessoas resgatadas', data=arrivalhl)  
+ax.scatter(x='Ano', y='Pessoas resgatadas', data=arrival, marker='+', 
+           c='#D55E00')
+ax.set_xlabel('Ano')
+ax.legend(labels=['Santa Helena', 'total'])
+plt.show() 
+
+embhl0 = disemb_hl['Embarkation'].value_counts()
+embhl0.shape
+
+embhl1 = pd.Series(embhl0[:7])
+embhl2 = {'Outros': sum(embhl0[7:])}
+embhl2 = pd.Series(embhl2, index=['Outros'])
+embhl = pd.concat((embhl2, embhl1)).sort_values(ascending=False)
+
+embhl_d = dict(embhl)
+embhl_d = {x:y for x, y in embhl_d.items() if y != 0} 
+embhl_dkeys, embhl_dvalues = zip(*embhl_d.items())
+
+fig, ax = plt.subplots()
+ax.pie(embhl_dvalues, labels=embhl_dkeys, autopct='%1.1f%%', counterclock=False)
+plt.show()
+    
+print(embhl)
+
+fig, ax = plt.subplots()  
+ax.scatter(x='Ano', y='Pessoas resgatadas', data=arrivalft)
+ax.scatter(x='Ano', y='Pessoas resgatadas', data=arrivalhv)
+ax.scatter(x='Ano', y='Pessoas resgatadas', data=arrivalbh)
+ax.scatter(x='Ano', y='Pessoas resgatadas', data=arrivaljm)
+ax.scatter(x='Ano', y='Pessoas resgatadas', data=arrivalhl)
+ax.set_xlabel('Ano')
+ax.legend(labels=['Freetown', 'Havana', 'Bahamas', 
+                   'Kingston, Jamaica', 'Santa Helena'], 
+loc='upper left', fontsize=9)
+fig.suptitle('Todos os desembarques', 
+             fontsize=14, fontweight='bold')
+plt.show() 
+
