@@ -50,8 +50,6 @@ disemb_d = dict(disemb.sort_values(ascending=False))
 disemb_dkeys, disemb_dvalues = zip(*disemb_d.items())
 
 fig, ax = plt.subplots()
-#fig.suptitle('Locais onde as pessoas resgatadas desembarcaram', fontsize=14, 
-#             fontweight='bold')
 ax.pie(disemb_dvalues, autopct='%1.1f%%')
 fig.legend(disemb_dkeys, loc=8)
 plt.show()
