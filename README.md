@@ -1,5 +1,5 @@
 # Análise do banco de dados African Names
-<p><i>African Names</i> é um banco de dados disponibilizado no site <a href="https://www.slavevoyages.org">https://www.slavevoyages.org</a>.</p>
+<p><i>African Names</i> é um banco de dados disponibilizado no site <a href="https://www.slavevoyages.org">www.slavevoyages.org</a>.</p>
 <p>Possui 91.491 registros de pessoas, contendo as seguintes características: nome, idade, altura, sexo/idade, origem, número da viagem, nome do navio, chegada, embarque e desembarque (tradução livre).</p>
 <p>Contexto: durante os últimos 60 anos do tráfico transatlântico, os tribunais das bacias do Atlântico condenaram mais de 2 mil navios por se envolverem no tráfico e registraram os detalhes dos cativos encontrados a bordo, incluindo seus nomes africanos.</p>
 <p><b>Sobre o Slave Voyages</b></p>
